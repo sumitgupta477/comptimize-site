@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cut Your AI Costs on AWS | Comptimize</title>
+<meta name="description" content="If your product runs on AI, every customer request costs you money. Comptimize finds where your AI bill on AWS is higher than it needs to be, and what each fix saves. Start with a free, read-only scan.">
+<link rel="canonical" href="https://comptimize.com/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://comptimize.com/">
+<meta property="og:title" content="Bedrock and SageMaker Cost Optimization Audits | Comptimize">
+<meta property="og:description" content="If your product runs on AI, every customer request costs you money. Comptimize finds where your AI bill on AWS is higher than it needs to be, and what each fix saves. Start with a free, read-only scan.">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "ProfessionalService", "name": "Comptimize", "url": "https://comptimize.com/", "description": "If your product runs on AI, every customer request costs you money. Comptimize finds where your AI bill on AWS is higher than it needs to be, and what each fix saves. Start with a free, read-only scan.", "areaServed": ["Canada", "United States", "United Kingdom", "India"], "serviceType": ["AI cost optimization", "AWS cost audit", "FinOps consulting"], "knowsAbout": ["Amazon Bedrock", "Amazon SageMaker", "AWS cost optimization", "FinOps"]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Will you change anything in our account?", "acceptedAnswer": {"@type": "Answer", "text": "No. Our access is read-only. The report tells your team what to change, and you decide what to do."}}, {"@type": "Question", "name": "Do you see our prompts or customer data?", "acceptedAnswer": {"@type": "Answer", "text": "No. We only look at usage numbers, settings and spend. Questions about how your product behaves are answered by your team."}}, {"@type": "Question", "name": "Does the scan cost us anything?", "acceptedAnswer": {"@type": "Answer", "text": "The scan is free. AWS charges about 1 cent for each cost report the scan reads, so one scan adds about 20 to 40 cents to your AWS bill."}}, {"@type": "Question", "name": "How accurate are the savings?", "acceptedAnswer": {"@type": "Answer", "text": "Unused capacity is priced at AWS's published rates, or the rate on your bill. Savings from cheaper models, work that can wait and reused text are estimates with a range, based on what you actually spend. Discounts you've negotiated lower real costs, so we check large items against your bill."}}, {"@type": "Question", "name": "Can you make the changes for us?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. After the audit we quote each fix you want as its own project, such as budgets and alerts, moving work that can wait, or switching simple tasks to cheaper models. Your team can also do it all from the report."}}, {"@type": "Question", "name": "Will cutting costs hurt our reliability?", "acceptedAnswer": {"@type": "Answer", "text": "It shouldn't. Every recommendation is checked for its effect on your product: we size for your busiest times, keep backup capacity for anything customers rely on, and only suggest cheaper interruptible servers for work that can safely restart. Where a saving carries real risk, we say so and you decide."}}, {"@type": "Question", "name": "What if the free scan finds nothing?", "acceptedAnswer": {"@type": "Answer", "text": "Then we'll say so, and you won't need the full audit."}}, {"@type": "Question", "name": "Do you take on other cloud work?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Beyond AI costs, we take on cloud migrations, AI agents, deployment pipelines, security, running AI models in production, and general cloud and software work as separate projects. Ask us about them on your free scan call."}}, {"@type": "Question", "name": "Do you cover OpenAI or Anthropic bills?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Many teams pay OpenAI or Anthropic directly as well as AWS. You download a usage file from your OpenAI or Anthropic account and share it, and we look for the same savings: cheaper models for simple tasks, work that can wait, and repeated text. We never ask for your API keys."}}, {"@type": "Question", "name": "Do you support Google Cloud or Azure?", "acceptedAnswer": {"@type": "Answer", "text": "Not with the automated scan: it covers AWS only, and there is no scanner for Google Cloud or Azure yet. On request, we can review them by hand from your cost exports and a screen share, scoped and priced on your free scan call."}}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef1f4; --fg:#12202f; --muted:#546273; --card:#ffffff; --line:#cfd6de;
+  --accent:#2347f5; --accent-fg:#ffffff; --waste:#c8301a; --code-bg:#12202f; --code-fg:#dbe6f2;
+  --sans:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1620; --fg:#e8edf3; --muted:#9aa8b8; --card:#16212e; --line:#2a3a4c;
+    --accent:#8ba0ff; --accent-fg:#0e1620; --waste:#ff7d66; --code-bg:#0a1119; --code-fg:#cfdcec;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1620; --fg:#e8edf3; --muted:#9aa8b8; --card:#16212e; --line:#2a3a4c;
+  --accent:#8ba0ff; --accent-fg:#0e1620; --waste:#ff7d66; --code-bg:#0a1119; --code-fg:#cfdcec;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 4.5rem);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:1.0625rem;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
+.wrap{max-width:68rem;margin:0 auto;padding:0 1.25rem}
+h1,h2,h3{font-weight:800;letter-spacing:-0.02em;line-height:1.1;margin:0}
+h1{font-size:clamp(2.4rem,6.5vw,4.4rem)}
+h2{font-size:clamp(1.7rem,3.6vw,2.4rem);margin-bottom:.75rem}
+h3{font-size:1.2rem;font-weight:600;letter-spacing:-0.01em}
+p{margin:0 0 1rem;max-width:62ch}
+.muted{color:var(--muted)}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 0}
+.brand{font-weight:800;font-size:1.25rem;text-decoration:none;letter-spacing:-0.02em;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+.brand-line{font-weight:500;font-size:.9rem;color:var(--muted);letter-spacing:0}
+.nav{display:flex;gap:1.5rem}
+.nav a{text-decoration:none;color:var(--muted);font-weight:600}
+.nav a:hover{color:var(--fg)}
+
+/* buttons */
+.btn{display:inline-block;font:inherit;font-weight:600;padding:.8rem 1.35rem;border-radius:8px;border:2px solid var(--fg);text-decoration:none;cursor:pointer;background:transparent;color:var(--fg)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.actions{display:flex;gap:.9rem;flex-wrap:wrap;margin-top:1.5rem}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:3rem;align-items:center;padding:3rem 0 4.5rem}
+.hero p.lead{font-size:1.25rem;margin-top:1.25rem}
+
+/* the bill (the one memorable element) */
+.bill{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:1.5rem 1.4rem 1.2rem;position:relative;
+  box-shadow:0 1px 0 var(--line);
+  -webkit-mask:radial-gradient(circle at 8px 100%,transparent 6px,#000 6.5px) bottom/16px 100% repeat-x;
+  mask:radial-gradient(circle at 8px 100%,transparent 6px,#000 6.5px) bottom/16px 100% repeat-x;
+  padding-bottom:2rem}
+.offer{list-style:none;padding:0;margin:0 0 1rem;display:grid;gap:.55rem}
+.offer li{line-height:1.45}
+.offer.know{margin:.4rem 0 0}
+.offer.know li::before{content:"\2713  ";color:var(--accent);font-weight:700}
+.bill h2{font-size:1.05rem;font-weight:600;letter-spacing:0;margin:0 0 1rem;color:var(--muted)}
+.field{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.55rem 0;border-bottom:1px dashed var(--line)}
+.field label{color:var(--muted);font-size:.95rem}
+.field select,.field input{font:inherit;font-family:var(--mono);font-size:.95rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:.4rem .5rem;max-width:11.5rem}
+.field input{width:5rem;text-align:right}
+.fixed{font-family:var(--mono);font-size:.95rem}
+.total{padding-top:1.1rem}
+.total .label{color:var(--muted);font-size:.95rem}
+.total .amount{font-family:var(--mono);font-weight:600;font-size:clamp(2.2rem,5vw,3rem);color:var(--waste);line-height:1.1;font-variant-numeric:tabular-nums}
+.total .sub{font-family:var(--mono);font-size:.9rem;color:var(--muted);margin-top:.35rem}
+.fine{font-size:.82rem;color:var(--muted);margin:.9rem 0 0}
+
+/* sections */
+section{padding:3.5rem 0;border-top:1px solid var(--line)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:2rem;counter-reset:s;padding:0;list-style:none}
+.steps li{counter-increment:s}
+.steps li::before{content:counter(s);display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;border-radius:50%;background:var(--fg);color:var(--bg);font-weight:800;margin-bottom:.9rem}
+.steps p{color:var(--muted);margin:.4rem 0 0}
+.checks{width:100%;border-collapse:collapse;margin-top:1.5rem;font-size:1rem}
+.checks th,.checks td{text-align:left;padding:.85rem .75rem .85rem 0;border-bottom:1px solid var(--line);vertical-align:top}
+.checks th{font-weight:600;white-space:nowrap}
+.checks td:last-child{color:var(--muted)}
+.table-scroll{overflow-x:auto}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+.not-yet{margin:1rem 0 0;padding-left:1.1rem;color:var(--muted)}
+.not-yet li{margin:.25rem 0}
+pre{background:var(--code-bg);color:var(--code-fg);border-radius:8px;padding:1rem 1.1rem;overflow-x:auto;font-family:var(--mono);font-size:.88rem;line-height:1.55;margin:0 0 1rem}
+code{font-family:var(--mono);font-size:.92em}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem}
+.plan{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:1.6rem}
+.plan.featured{border:2px solid var(--accent)}
+.price{font-size:2.4rem;font-weight:800;letter-spacing:-0.02em;margin:.4rem 0 .2rem}
+.price span{font-size:1rem;font-weight:400;color:var(--muted)}
+.plan ul{padding-left:1.1rem;margin:1rem 0 1.4rem}
+.plan li{margin:.35rem 0}
+.status{font-size:.9rem;color:var(--muted);margin-top:.7rem}
+details{border-bottom:1px solid var(--line);padding:1rem 0}
+summary{cursor:pointer;font-weight:600;font-size:1.1rem}
+details p{margin:.7rem 0 0;color:var(--muted)}
+details.more{border-bottom:0;padding:.75rem 0 0}
+details.more>summary{font-size:1rem;color:var(--accent)}
+details.guide-d>summary{font-size:1.05rem}
+details.guide-d p.src{font-size:.9rem}
+footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted);font-size:.92rem}
+
+@media (max-width:52rem){
+  .hero,.two,.plans,.steps{grid-template-columns:1fr}
+  .hero{gap:2.25rem;padding-top:1.5rem}
+  .nav{gap:1rem}
+  .top{flex-wrap:wrap;gap:.6rem 1rem}
+  .nav{flex-wrap:wrap;gap:.4rem 1rem}
+  .checks th[scope="row"]{white-space:normal;width:38%}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.field input[type=range]{width:9rem;padding:0;background:transparent;border:0;accent-color:var(--accent)}
+.how{font-size:.9rem;color:var(--muted);white-space:nowrap}
+.plans{grid-template-columns:repeat(3,1fr)}
+@media (max-width:52rem){.plans{grid-template-columns:1fr}}
+.check-q{border:0;border-top:1px solid var(--line);margin:0;padding:1rem 0}
+.check-q legend{font-weight:600;padding:0;margin-bottom:.6rem;max-width:62ch}
+.opts{display:flex;flex-wrap:wrap;gap:.5rem}
+.opts label{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--line);border-radius:999px;padding:.35rem .85rem;cursor:pointer;background:var(--card);font-size:.95rem}
+.opts input{accent-color:var(--accent);margin:0}
+.opts label:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.result{background:var(--card);border:2px solid var(--accent);border-radius:8px;padding:1.4rem;margin-top:1.5rem}
+.result ul{padding-left:1.1rem}.result li{margin:.45rem 0}
+.score{font-size:2rem;font-weight:800;letter-spacing:-0.02em}
+.guides{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem}
+.guide{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:1.4rem}
+.guide h3{margin-bottom:.6rem}.guide p{color:var(--muted);font-size:1rem}
+.guide .src{font-size:.85rem}
+.results-form{border-top:1px solid var(--line);margin-top:1.4rem;padding-top:1.2rem;display:grid;gap:.55rem;max-width:30rem}
+.results-form input[type=email]{font:inherit;padding:.6rem .7rem;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+.results-form .consent{display:flex;gap:.5rem;align-items:flex-start;font-size:.95rem;color:var(--muted)}
+.results-form .consent input{margin-top:.3rem;accent-color:var(--accent)}
+.results-form .btn{justify-self:start}
+.contact-form{display:grid;gap:.55rem;max-width:34rem;margin-top:1.2rem}
+.contact-form input:not([type=checkbox]),.contact-form select,.contact-form textarea{font:inherit;padding:.6rem .7rem;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--fg)}
+.contact-form .consent{display:flex;gap:.5rem;align-items:flex-start;font-size:.95rem;color:var(--muted)}
+.contact-form .consent input{margin-top:.3rem;accent-color:var(--accent)}
+.contact-form .btn{justify-self:start}
+@media (max-width:52rem){.guides{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#top">Comptimize <span class="brand-line">Compute, optimized.</span></a>
+    <nav class="nav" aria-label="Main"><a href="#check">Cost check</a><a href="#how">How it works</a><a href="#about">About</a><a href="#pricing">Pricing</a></nav>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div>
+        <h1>Is AI eating into your margins?</h1>
+        <p class="lead">If your product runs on AI, every customer request costs you money, and the bill grows as you grow. Most teams pay more than they need to: expensive models doing simple jobs, capacity nobody uses, and discounts nobody switched on. Comptimize finds that money on AWS and shows you what each fix saves.</p>
+        <div class="actions">
+          <a class="btn primary" id="book-link" href="#pricing">Book a free scan</a>
+        </div>
+        <p class="status" id="book-status"></p>
+        <p class="muted" id="book-alt" style="margin:.4rem 0 0">Or email <a href="mailto:info@comptimize.com">info@comptimize.com</a></p>
+        <p class="muted" style="margin:.4rem 0 0">Not sure yet? <a href="#check">Take the 2-minute check</a> or <a href="sample-audit-report.pdf" target="_blank" rel="noopener">see a sample report</a> (PDF, fictional client)</p>
+        <p class="muted" style="margin-top:1.25rem">Led by a certified cloud cost specialist who saved a Fortune 500 automaker over $17M. <a href="#about">About Sumit</a></p>
+      </div>
+
+      <aside class="bill" aria-labelledby="bill-title">
+        <h2 id="bill-title">The free scan</h2>
+        <ul class="offer">
+          <li><b>Free.</b> No cost, no commitment.</li>
+          <li><b>Safe.</b> Read-only: we can't change anything.</li>
+          <li><b>Quick.</b> About 10 minutes to set up, and your results on a 30-minute call within a week.</li>
+        </ul>
+        <div class="total">
+          <div class="label">You'll know</div>
+          <ul class="offer know">
+            <li>Where your AI money goes</li>
+            <li>What to fix first, and what it saves</li>
+            <li>Whether a full audit is worth it</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <section id="how">
+      <h2>How it works</h2>
+      <p class="muted">You find out what's worth fixing before you pay anything.</p>
+      <ol class="steps">
+        <li><h3>Free scan</h3><p>You give us read-only access to your AWS account in a few clicks. We can't change anything. We scan it and walk you through the biggest findings on a 30-minute call.</p></li>
+        <li><h3>Full audit</h3><p>We go through how your product uses AI with your team, then deliver a written report ranking every fix by how much it saves and how hard it is.</p></li>
+        <li><h3>Fix</h3><p>Your team makes the changes, or we do them for you, quoted per project. <a href="#after">See what we can implement</a>.</p></li>
+      </ol>
+    </section>
+
+    <section id="look">
+      <h2>What we check</h2>
+      <p class="muted">We check your AI costs on AWS, and your OpenAI or Anthropic bills if you use them directly.</p>
+      <div class="table-scroll">
+        <table class="checks">
+          <thead><tr><th scope="col">Where money leaks</th><th scope="col">What it means</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Expensive models doing simple jobs</th><td>Simple tasks, like sorting or tagging, running on your most expensive AI model when a cheaper one would do</td></tr>
+            <tr><th scope="row">Work that could run at half price</th><td>Jobs nobody waits on, like nightly reports, that AWS would run later at half the price</td></tr>
+            <tr><th scope="row">Paying twice for the same text</th><td>Requests that resend the same long instructions or documents every time, which AWS can reuse for much less</td></tr>
+            <tr><th scope="row">Capacity nobody uses</th><td>Reserved AI capacity, servers and GPUs that bill every hour but get little or no use</td></tr>
+            <tr><th scope="row">Not knowing what drives the bill</th><td>Which product, feature or team your AI spend comes from, and whether budgets and alerts would catch a spike</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <details class="more"><summary>See all 17 checks in technical detail</summary>
+      <div class="table-scroll">
+        <table class="checks">
+          <thead><tr><th scope="col">Area</th><th scope="col">What we look for</th><th scope="col">How it's found</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Bedrock provisioned throughput</th><td>Reserved model capacity with no traffic, or too little to justify the hourly charge</td><td class="how">Automated scan</td></tr>
+            <tr><th scope="row">Batch inference</th><td>Workloads nobody waits on that could run at half the price</td><td class="how">Review with your team</td></tr>
+            <tr><th scope="row">Prompt caching</th><td>Requests that resend the same long instructions or documents</td><td class="how">Review with your team</td></tr>
+            <tr><th scope="row">Model choice and routing</th><td>Simple tasks running on your most expensive model</td><td class="how">Review with your team</td></tr>
+            <tr><th scope="row">SageMaker endpoints and notebooks</th><td>Endpoints with no traffic and notebooks left running</td><td class="how">Automated scan</td></tr>
+            <tr><th scope="row">Cost controls</th><td>Missing budget alerts, anomaly alerts, notebook auto-stop and Bedrock spend tracking</td><td class="how">Automated scan</td></tr>
+            <tr><th scope="row">Savings Plans</th><td>AWS's own commitment recommendations for steady SageMaker and compute usage, with the estimated saving</td><td class="how">Automated scan</td></tr>
+            <tr><th scope="row">Spend breakdown, forecast and attribution</th><td>Bedrock spend by model for last month, what your AI costs per 1,000 requests, next month's AI spend forecast, and how much AI spend can be traced to a team or project</td><td class="how">Automated scan</td></tr>
+            <tr><th scope="row">Carbon and water footprint</th><td>AWS's own estimates of your account's emissions and data center water use, by service and region, for teams that report on sustainability. Idle fixes cut both as well as cost</td><td class="how">Automated scan</td></tr>
+            <tr><th scope="row">Amazon Q, Kubernetes GPUs, AI spend outside AWS</th><td>Unused Q seats, GPU use inside EKS clusters, and model API bills such as OpenAI or Anthropic</td><td class="how">Review with your team</td></tr>
+            <tr><th scope="row">GPU instances</th><td>p and g family EC2 instances showing no GPU activity</td><td class="how">Automated scan</td></tr>
+            <tr><th scope="row">SageMaker training jobs</th><td>Training that could run on Spot capacity, Spot jobs without checkpoints, spend on failed runs, and warm pools billing with nothing reusing them</td><td class="how">Automated scan</td></tr>
+            <tr><th scope="row">Underused GPUs</th><td>GPU instances and endpoints that do some work but stay mostly empty, as candidates for sharing one GPU between workloads or moving to a smaller one</td><td class="how">Automated scan</td></tr>
+            <tr><th scope="row">AWS AI chip candidates and HyperPod</th><td>Steady GPU workloads that may cost less on AWS Inferentia or Trainium chips, and the nodes each HyperPod cluster keeps running, listed for review</td><td class="how">Automated scan</td></tr>
+            <tr><th scope="row">Model Monitor schedules</th><td>Monitoring jobs still running for endpoints that are gone or idle, and hourly schedules on low-traffic endpoints where a daily run would do</td><td class="how">Automated scan</td></tr>
+            <tr><th scope="row">Changes since your last scan</th><td>On repeat scans: new findings, findings that are gone, and the change in idle spend</td><td class="how">Automated scan</td></tr>
+            <tr><th scope="row">GPU inference and training</th><td>Whether the sharing, resizing and AWS chip candidates from the scan are worth acting on, Slurm clusters outside HyperPod, and leftover training data and model artifacts</td><td class="how">Review with your team</td></tr>
+          </tbody>
+        </table>
+      </div>
+      </details>
+      <details class="more"><summary>How we estimate savings, and where they can be wrong</summary>
+        <p>Unused capacity is priced at AWS's published rates for your region. Savings from cheaper models, work that can wait and reused text are estimated from what you actually spend on each model, always as a range, with a simple test to confirm each one.</p>
+        <p>Discounts you've negotiated with AWS make your real costs lower than published prices, and a cheaper model needs testing on your own examples before you switch. Every finding shows its evidence so you can judge it.</p>
+      </details>
+      <div style="margin-top:2rem">
+        <h3>Savings that don't put your product at risk</h3>
+        <p class="muted" style="margin-top:.5rem">Every recommendation is checked so it won't slow your product down or make it less dependable, and every change is planned so it can be undone where possible. We flag the ones that can't, like a deleted resource or a commitment, and if a saving carries real risk, we tell you and you decide.</p>
+      </div>
+    </section>
+
+    <section id="check">
+      <h2>Take the 2-minute AI cost check</h2>
+      <p class="muted">Answer nine quick yes-or-no questions and see where your AI bill may be leaking. We keep your answers anonymously to improve the check; your name and email are only sent if you ask us to email you the results.</p>
+      <div id="check-questions"></div>
+      <div class="actions"><button class="btn primary" id="check-submit" type="button">See my results</button></div>
+      <p class="status" id="check-status" aria-live="polite"></p>
+      <div id="check-result" aria-live="polite"></div>
+    </section>
+
+    <section id="after">
+      <h2>What else we can do</h2>
+      <p class="muted">After the audit, your team can make the changes, or we can, quoted per project and agreed before work starts. We also take on related cloud and AI projects.</p>
+      <details class="more"><summary>We make the fixes for you: budgets and alerts, cheaper models, work that can wait, right-sized capacity and more</summary>
+      <div class="table-scroll">
+        <table class="checks">
+          <thead><tr><th scope="col">Package</th><th scope="col">What we do</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Cost controls setup</th><td>Budgets, anomaly alerts, notebook auto-stop and owner tags, so the next spike gets caught</td></tr>
+            <tr><th scope="row">Bedrock spend tracking</th><td>Application inference profiles and cost allocation tags, so you can see spend by team or feature</td></tr>
+            <tr><th scope="row">Batch migration</th><td>Move the workloads nobody waits on to batch inference, with a before-and-after cost comparison</td></tr>
+            <tr><th scope="row">Prompt caching rollout</th><td>Add caching where requests repeat the same long context, and measure the saving</td></tr>
+            <tr><th scope="row">Model routing evaluation</th><td>Test a cheaper model on your real examples, report quality against cost, and switch only if it passes</td></tr>
+            <tr><th scope="row">Capacity right-sizing</th><td>Resize or retire provisioned throughput, SageMaker endpoints and GPU instances based on actual traffic and utilization</td></tr>
+            <tr><th scope="row">Endpoint scale-to-zero</th><td>Move rarely used SageMaker endpoints to serverless or asynchronous endpoints, so they stop billing when nobody calls them</td></tr>
+            <tr><th scope="row">Reliability alerts setup</th><td>CloudWatch alarms and a dashboard for your AI services on the four golden signals (latency, traffic, errors and saturation, including throttling and quotas near their limit), plus cost spikes, routed to email, Slack or your on-call tool</td></tr>
+            <tr><th scope="row">GPU automation setup</th><td>Run each AI workload on the cheapest hardware it's been tested on: a smaller GPU, an AWS AI chip (Inferentia, Trainium), or a CPU for small models that don't need a GPU. Uses Spot where it's safe, with automatic fallback when capacity runs out, all on AWS tools your team owns</td></tr>
+          </tbody>
+        </table>
+      </div>
+      </details>
+      <details class="more" id="beyond"><summary>Other projects: moving to AWS, building AI agents, rules for how your teams use AI, reliability and security reviews</summary>
+      <div class="table-scroll">
+        <table class="checks">
+          <thead><tr><th scope="col">Service</th><th scope="col">What we do</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Cloud migration</th><td>Move applications to AWS, or onto cheaper AWS services such as serverless, planned for cost and uptime from the start</td></tr>
+            <tr><th scope="row">AI agent development</th><td>Build agents on Amazon Bedrock that take over repetitive work, with cost limits and spend tracking built in</td></tr>
+            <tr><th scope="row">Azure and Google Cloud audits</th><td>The same AI cost review for Azure OpenAI, Azure Machine Learning, Vertex AI and GPU instances, done by hand from your cost exports. On request</td></tr>
+            <tr><th scope="row">AI governance on AWS</th><td>Set up the technical controls for how your teams use AI: approved models, Bedrock guardrails, invocation logging, access rules and cost ownership. We build the controls; your legal and compliance teams set the policy. Azure and Google Cloud on request</td></tr>
+            <tr><th scope="row">Reliability and security review</th><td>A hands-on review of your AI workloads: the four golden signals (latency, traffic, errors, saturation), endpoint scaling and failover, notebook and endpoint access, encryption and network exposure, with a prioritized fix list. Recommendations, not a compliance audit. On request</td></tr>
+            <tr><th scope="row">Engineering help</th><td>Hands-on help beyond AI costs: Kubernetes cost reviews (right-sizing what each app reserves, autoscaling, cheaper servers), deployment pipelines, security, running AI models in production, cloud cleanup and architecture reviews, and general cloud and software work</td></tr>
+          </tbody>
+        </table>
+      </div>
+      </details>
+      <div class="actions" style="margin-top:1.5rem">
+        <a class="btn" id="book-link-3" href="#pricing">Ask about implementation</a>
+        <a class="btn" id="book-link-4" href="#pricing">Ask about other projects</a>
+      </div>
+    </section>
+
+
+
+    <section id="about">
+      <h2>Who does the work</h2>
+      <div class="two">
+        <div>
+          <p class="person"><b>Sumit</b>, Cloud and FinOps</p>
+          <p>Comptimize was founded by Sumit, a cloud architect and cloud cost specialist with over 10 years of experience, who has cut cloud bills for Fortune 500 companies and built AI systems on AWS.</p>
+          <ul class="not-yet" style="color:var(--fg)">
+            <li>Saved a Fortune 500 automaker over $17M in cloud costs</li>
+            <li>Managed about $50M a year in cloud spend across that company's ten biggest applications</li>
+            <li>Built AI systems on AWS for a global investment bank</li>
+            <li>Cut a streaming platform's cloud bill by $20K a month</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Certified in cloud cost and the three major clouds</h3>
+          <p class="muted" style="margin-top:.5rem">FinOps, AWS, Google Cloud and Azure, plus Terraform and Kubernetes.</p>
+          <details class="more"><summary>See all certifications</summary>
+          <ul class="not-yet" style="color:var(--fg)">
+            <li>FinOps Certified Practitioner</li>
+            <li>AWS Certified Solutions Architect – Associate</li>
+            <li>AWS Certified AI Practitioner</li>
+            <li>Google Cloud Professional Cloud Architect</li>
+            <li>Microsoft Azure Developer Associate and Security Engineer Associate</li>
+            <li>HashiCorp Terraform Associate</li>
+            <li>Certified Kubernetes Application Developer</li>
+          </ul>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section id="trust">
+      <h2>What we can and can't see</h2>
+      <div class="two">
+        <div>
+          <p>Our access is read-only. We can see how your AI services are set up, how much they're used and what they cost. We can't create, change or delete anything.</p>
+          <p>We never see what your customers send to your AI or what it answers. We work from usage numbers and spend, plus what your team tells us.</p>
+          <p>Access is locked to a secret code unique to you, and you can remove it at any time in your AWS account.</p>
+        </div>
+        <details class="more"><summary>See the exact AWS permissions</summary>
+        <pre aria-label="Permissions granted">bedrock:ListProvisionedModelThroughputs
+bedrock:ListTagsForResource
+sagemaker:ListEndpoints
+sagemaker:DescribeEndpoint
+sagemaker:DescribeEndpointConfig
+sagemaker:ListNotebookInstances
+sagemaker:DescribeNotebookInstance
+sagemaker:ListTags
+ec2:DescribeInstances
+ec2:DescribeRegions
+cloudwatch:GetMetricStatistics
+cloudwatch:ListMetrics
+pricing:GetProducts
+bedrock:ListInferenceProfiles
+sagemaker:DescribeNotebookInstanceLifecycleConfig
+sagemaker:ListTrainingJobs
+sagemaker:DescribeTrainingJob
+sagemaker:ListClusters
+sagemaker:DescribeCluster
+sagemaker:ListMonitoringSchedules
+sagemaker:DescribeMonitoringSchedule
+sagemaker:ListMonitoringExecutions
+sagemaker:DescribeProcessingJob
+sagemaker:DescribeDataQualityJobDefinition
+sagemaker:DescribeModelQualityJobDefinition
+sagemaker:DescribeModelBiasJobDefinition
+sagemaker:DescribeModelExplainabilityJobDefinition
+budgets:ViewBudget
+ce:GetAnomalyMonitors
+ce:GetSavingsPlansPurchaseRecommendation
+ce:GetCostForecast
+ce:GetCostAndUsage
+ce:GetDimensionValues
+ce:GetTags
+sustainability:GetEstimatedCarbonEmissions
+sustainability:GetEstimatedCarbonEmissionsDimensionValues
+sustainability:GetCarbonFootprintSummary
+sustainability:GetEstimatedWaterAllocation
+sustainability:GetEstimatedWaterAllocationDimensionValues</pre>
+        </details>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <h2>Pricing</h2>
+      <p class="muted">Start with the free scan. It tells you whether a full audit is worth it. The full audit is for teams spending about $5,000 a month or more on AI in AWS. Implementation work is quoted separately for each project.</p>
+      <div class="plans">
+        <div class="plan">
+          <h3>Free scan</h3>
+          <div class="price">$0</div>
+          <ul>
+            <li>Read-only scan of one AWS account</li>
+            <li>30-minute call on the biggest findings</li>
+            <li>No commitment</li>
+          </ul>
+          <a class="btn" id="book-link-2" href="#pricing">Book a free scan</a>
+        </div>
+        <div class="plan featured">
+          <h3>Full audit</h3>
+          <div class="price">From $1,500<span> one time</span></div>
+          <p class="muted" style="margin:.25rem 0 .5rem">Best for teams spending $5,000+ a month on AI in AWS</p>
+          <ul>
+            <li>Full scan of your AI services on AWS</li>
+            <li>Review of how your product uses AI: cheaper models, work that can wait, repeated text</li>
+            <li>Plus general AWS waste found along the way</li>
+            <li>Written report ranked by saving and effort (<a href="sample-audit-report.pdf" target="_blank" rel="noopener">see a sample</a>)</li>
+            <li>60-minute review call with your team</li>
+            <li>A project quote for any fixes you want us to make</li>
+          </ul>
+          <a class="btn primary" id="audit-link" href="#pricing">Request an audit</a>
+          <p class="status" id="audit-status"></p>
+        </div>
+        <div class="plan">
+          <h3>Monthly check-in</h3>
+          <div class="price">$500<span> per month</span></div>
+          <ul>
+            <li>For audit clients</li>
+            <li>Monthly re-scan and short report</li>
+            <li>New waste flagged each month</li>
+            <li>Cancel any time</li>
+          </ul>
+          <a class="btn" id="monthly-link" href="#pricing">Ask about check-ins</a>
+          <p class="status" id="monthly-status"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" hidden>
+      <h2>Contact us</h2>
+      <p class="muted">Request a free scan, ask about an audit or implementation, or introduce a team. We'll reply within two business days.</p>
+      <form id="contact-form" class="contact-form" novalidate>
+        <label for="cf-topic">What can we help with?</label>
+        <select id="cf-topic">
+          <option>Free scan</option>
+          <option>Full audit</option>
+          <option>Implementation work</option>
+          <option>Monthly check-ins</option>
+          <option>Introduction</option>
+          <option>Other services</option>
+        </select>
+        <label for="cf-name">Name</label>
+        <input id="cf-name" autocomplete="name" required>
+        <label for="cf-email">Work email</label>
+        <input id="cf-email" type="email" autocomplete="email" required>
+        <label for="cf-company">Company</label>
+        <input id="cf-company" autocomplete="organization">
+        <label for="cf-spend">Rough monthly AI spend on AWS</label>
+        <select id="cf-spend">
+          <option value="">Choose one</option>
+          <option>Under $1,000</option>
+          <option>$1,000 to $5,000</option>
+          <option>$5,000 to $20,000</option>
+          <option>Over $20,000</option>
+          <option>Not sure</option>
+        </select>
+        <label for="cf-message">Anything we should know? (optional)</label>
+        <textarea id="cf-message" rows="4"></textarea>
+        <button class="btn primary" type="submit">Send</button>
+        <p class="fine" style="margin:0">We'll only use your details to reply to this request. <a href="#privacy">Privacy</a><span class="terms-on" hidden> · By sending, you agree to our <a class="terms-href" href="terms.html">Terms</a>.</span></p>
+        <p class="status" id="cf-status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="refer">
+      <h2>Know a team with a large AI bill?</h2>
+      <p class="muted">Introduce us. A warm introduction is the best compliment we can get, and the free scan costs them nothing.</p>
+      <div class="actions"><a class="btn" id="refer-link" href="#pricing">Make an introduction</a></div>
+      <p class="muted" style="margin-top:.6rem">Or email <a href="mailto:info@comptimize.com">info@comptimize.com</a></p>
+    </section>
+
+    <section id="faq">
+      <h2>Questions</h2>
+      <details><summary>Will you change anything in our account?</summary><p>No. Our access is read-only. The report tells your team what to change, and you decide what to do.</p></details>
+      <details><summary>Do you see our prompts or customer data?</summary><p>No. We only look at usage numbers, settings and spend. Questions about how your product behaves are answered by your team.</p></details>
+      <details><summary>Does the scan cost us anything?</summary><p>The scan is free. AWS charges about 1 cent for each cost report the scan reads, so one scan adds about 20 to 40 cents to your AWS bill.</p></details>
+      <details><summary>How accurate are the savings?</summary><p>Unused capacity is priced at AWS's published rates, or the rate on your bill. Savings from cheaper models, work that can wait and reused text are estimates with a range, based on what you actually spend. Discounts you've negotiated lower real costs, so we check large items against your bill.</p></details>
+      <details><summary>Can you make the changes for us?</summary><p>Yes. After the audit we quote each fix you want as its own project, such as budgets and alerts, moving work that can wait, or switching simple tasks to cheaper models. Your team can also do it all from the report.</p></details>
+      <details><summary>Will cutting costs hurt our reliability?</summary><p>It shouldn't. Every recommendation is checked for its effect on your product: we size for your busiest times, keep backup capacity for anything customers rely on, and only suggest cheaper interruptible servers for work that can safely restart. Where a saving carries real risk, we say so and you decide.</p></details>
+      <details><summary>What if the free scan finds nothing?</summary><p>Then we'll say so, and you won't need the full audit.</p></details>
+      <details><summary>Do you take on other cloud work?</summary><p>Yes. Beyond AI costs, we take on cloud migrations, AI agents, deployment pipelines, security, running AI models in production, and general cloud and software work as separate projects. Ask us about them on your free scan call.</p></details>
+      <details><summary>Do you cover OpenAI or Anthropic bills?</summary><p>Yes. Many teams pay OpenAI or Anthropic directly as well as AWS. You download a usage file from your OpenAI or Anthropic account and share it, and we look for the same savings: cheaper models for simple tasks, work that can wait, and repeated text. We never ask for your API keys.</p></details>
+      <details><summary>Do you support Google Cloud or Azure?</summary><p>Not with the automated scan: it covers AWS only, and there is no scanner for Google Cloud or Azure yet. On request, we can review them by hand from your cost exports and a screen share, scoped and priced on your free scan call.</p></details>
+    </section>
+
+    <section id="guides">
+      <h2>Guides for your engineers</h2>
+      <p class="muted">Short technical answers to the questions we hear most, with sources.</p>
+      <div class="guides">
+        <article class="guide" id="guide-batch">
+          <details class="guide-d"><summary>When Bedrock batch inference saves money</summary>
+          <p>Batch inference processes a file of requests in the background and returns results later, at 50% less than on-demand pricing for supported models. It fits work nobody waits on: nightly report summaries, bulk document tagging, evaluation runs. It doesn't fit chat or anything a user is waiting for, since results can take up to 24 hours.</p>
+          <p>Estimate the saving as spend on that model, times the share of work that can wait, times 50%.</p>
+          <p class="src muted">Sources: <a href="https://aws.amazon.com/bedrock/pricing/">AWS Bedrock pricing</a>, <a href="https://www.doit.com/blog/the-engineering-guide-to-amazon-bedrock-cost-optimization">DoiT</a></p>
+        </details>
+        </article>
+        <article class="guide" id="guide-caching">
+          <details class="guide-d"><summary>Prompt caching: when it pays</summary>
+          <p>When many requests start with the same long text, such as system instructions, a reference document or tool definitions, Bedrock can cache that shared prefix, and cached input tokens cost about 90% less. Steady traffic benefits most, because cached prefixes expire after a few minutes.</p>
+          <p>Caching only cuts input costs, and output tokens typically cost 3 to 5 times more than input, so output-heavy apps save less. Support and minimum prefix length vary by model.</p>
+          <p class="src muted">Source: <a href="https://www.doit.com/blog/the-engineering-guide-to-amazon-bedrock-cost-optimization">DoiT</a></p>
+        </details>
+        </article>
+        <article class="guide" id="guide-pt">
+          <details class="guide-d"><summary>Is Bedrock provisioned throughput worth it?</summary>
+          <p>Provisioned throughput reserves model capacity that bills every hour, used or not. Fine-tuned models need it, and it can beat on-demand for steady, high-volume traffic. DoiT puts the break-even at roughly 60 to 70% sustained utilization of a model unit; below that, on-demand is usually cheaper.</p>
+          <p>Reservations left running after a project ends are one of the most expensive Bedrock mistakes. Committed terms keep billing until they end, so review renewals early.</p>
+          <p class="src muted">Source: <a href="https://www.doit.com/blog/the-engineering-guide-to-amazon-bedrock-cost-optimization">DoiT</a></p>
+        </details>
+        </article>
+        <article class="guide" id="guide-idle">
+          <details class="guide-d"><summary>Finding idle SageMaker endpoints and GPU instances</summary>
+          <p>A real-time SageMaker endpoint bills for its instances every hour, even with zero traffic, and GPU instances on EC2 do the same. Check each endpoint's invocations in CloudWatch over the last two to four weeks, and GPU utilization for GPU instances, which needs the CloudWatch agent's NVIDIA metrics.</p>
+          <p>Before deleting anything, confirm nothing calls it monthly. For occasional traffic, serverless or async endpoints that scale to zero are usually cheaper.</p>
+          <p class="src muted">Sources: <a href="https://aws.amazon.com/blogs/machine-learning/part-5-analyze-amazon-sagemaker-spend-and-determine-cost-optimization-opportunities-based-on-usage-part-5-hosting">AWS: analyze SageMaker hosting spend</a>, <a href="https://docs.aws.amazon.com/en_en/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-NVIDIA-GPU.html">AWS: collect NVIDIA GPU metrics</a>, <a href="https://docs.aws.amazon.com/en_en/sagemaker/latest/dg/endpoint-auto-scaling-zero-instances.html">AWS: scale an endpoint to zero</a></p>
+        </details>
+        </article>
+      </div>
+    </section>
+    <section id="privacy">
+      <h2>Privacy</h2>
+      <p class="muted">Last updated October 2026.</p>
+      <div class="two">
+        <div>
+          <h3>What we collect</h3>
+          <p class="muted">Contact details you send us, such as your name, email and company. If you use the contact form, we receive what you enter there through our form provider, Formspree. If you book a call, our scheduling provider, Calendly, receives the name and email you enter and adds the meeting to our calendar. When you complete the AI cost check, we receive your answers anonymously the same way, without your name or email; if you choose to email yourself the results, we also receive your email address. During a scan, through read-only access: how your AWS services are set up, how much they are used, your budget settings and what they cost. We never access prompts, model outputs, application data or stored files.</p>
+          <h3>How we use it</h3>
+          <p class="muted">Only to run your scan or audit, write your report and do work you've asked for. We don't sell your information or use it for advertising.</p>
+        </div>
+        <div>
+          <h3>Who else sees it</h3>
+          <p class="muted">Contractors who work on your project, under the same confidentiality terms. Payments are handled by Stripe; we never see or store card details. This site has no tracking or analytics cookies. Its fonts load from Google Fonts, which receives your IP address.</p>
+          <h3>How long we keep it, and your choices</h3>
+          <p class="muted">We keep reports and scan results for 12 months after an engagement ends, and cost check results for 12 months after you send them, or delete them sooner on request. You can remove our access at any time in your AWS account. To ask about or delete your information, email <a href="mailto:info@comptimize.com">info@comptimize.com</a>.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+
+  <footer>
+    <p><strong>Comptimize · Compute, optimized.</strong> We find the AI spend on AWS you're paying for but not using. We're independent and aren't affiliated with Amazon Web Services.</p>
+    <p id="contact-line" hidden>Contact: <a id="contact-link" href="#top"></a></p>
+    <p>Comptimize is operated by Soft Microsolutions Inc., an Alberta corporation.</p>
+    <p><a href="#privacy">Privacy</a><span class="terms-on" hidden> · <a class="terms-href" href="terms.html">Terms</a></span></p>
+  </footer>
+</div>
+
+<script>
+/* ---- Set these before you go live ---- */
+var CONFIG = {
+  bookingUrl: "https://calendly.com/comptimize/30min",             // e.g. a Calendly link for the free scan call
+  contactEmail: "info@comptimize.com", // shown in the footer; also used for the free scan if no booking link is set
+  auditPaymentLink: "",       // Stripe Payment Link for the full audit
+  monthlyPaymentLink: "",     // Stripe Payment Link (subscription) for monthly check-ins
+  contactFormUrl: "https://formspree.io/f/mljgvald",         // Formspree form URL for the "Book a free scan" contact form; used when bookingUrl is empty
+  resultsFormUrl: "https://formspree.io/f/myekvlpk",         // Formspree form URL (https://formspree.io/f/...) for "email me my results"; box stays hidden while empty
+  termsUrl: ""                // set to "terms.html" once the lawyer has approved the Terms and terms.html is uploaded; Terms links stay hidden while empty
+};
+
+if (CONFIG.termsUrl) {
+  document.querySelectorAll(".terms-on").forEach(function (el) { el.hidden = false; });
+  document.querySelectorAll(".terms-href").forEach(function (a) { a.href = CONFIG.termsUrl; });
+}
+
+
+
+/* Links stay disabled until configured, so nothing on the page is a dead end. */
+function wire(id, url, statusId, missingMsg) {
+  var el = document.getElementById(id), st = statusId && document.getElementById(statusId);
+  if (url) {
+    el.href = url; el.removeAttribute("aria-disabled");
+    if (/^https?:/.test(url)) { el.target = "_blank"; el.rel = "noopener"; }
+  } else {
+    el.setAttribute("aria-disabled", "true");
+    el.addEventListener("click", function (e) { e.preventDefault(); });
+    if (st && missingMsg) st.textContent = missingMsg;
+  }
+}
+if (CONFIG.contactFormUrl) document.getElementById("contact").hidden = false;
+var bookUrl = CONFIG.bookingUrl || (CONFIG.contactFormUrl ? "#contact" : "") ||
+  (CONFIG.contactEmail ? "mailto:" + CONFIG.contactEmail + "?subject=" + encodeURIComponent("Free AI cost scan") : "");
+wire("book-link", bookUrl, "book-status", "Bookings open soon.");
+wire("book-link-2", bookUrl);
+wire("book-link-3", bookUrl);
+wire("book-link-4", bookUrl);
+var referUrl = CONFIG.contactFormUrl ? "#contact" : CONFIG.contactEmail
+  ? "mailto:" + CONFIG.contactEmail + "?subject=" + encodeURIComponent("Introduction: a team that could use a free AI cost scan")
+  : bookUrl;
+wire("refer-link", referUrl);
+/* Guide links open the guide they point to. */
+document.addEventListener("click", function (e) {
+  var a = e.target.closest && e.target.closest('a[href^="#guide-"]');
+  if (!a) return;
+  var d = document.querySelector(a.getAttribute("href") + " details");
+  if (d) d.open = true;
+});
+/* Buttons that open the contact form preselect the matching topic. */
+var TOPICS = {"book-link": "Free scan", "book-link-2": "Free scan", "book-link-3": "Implementation work",
+  "book-link-4": "Other services", "audit-link": "Full audit", "monthly-link": "Monthly check-ins", "refer-link": "Introduction"};
+document.addEventListener("click", function (e) {
+  var a = e.target.closest && e.target.closest("a");
+  if (!a || a.getAttribute("href") !== "#contact") return;
+  var t = TOPICS[a.id] || (a.id === "check-book" ? "Free scan" : null);
+  if (t) { document.getElementById("cf-topic").value = t; syncIntro(); }
+});
+var INTRO_TEXT = "I'd like to introduce a team that could use a free scan.\nCompany:\nContact name and email:\nHow I know them:";
+/* The introduction template shows only for the Introduction topic; text the visitor typed is never touched. */
+function syncIntro() {
+  var m = document.getElementById("cf-message"), topic = document.getElementById("cf-topic").value;
+  if (!m) return;
+  if (topic === "Introduction" && !m.value) m.value = INTRO_TEXT;
+  else if (topic !== "Introduction" && m.value === INTRO_TEXT) m.value = "";
+}
+document.getElementById("cf-topic").addEventListener("change", syncIntro);
+
+/* ---- AI cost check ---- */
+var QUESTIONS = [
+  {q: "Do you have an AWS budget alert that covers your AI spend?",
+   gap: "No budget alert on AI spend, so a spike can run for weeks before anyone sees the bill."},
+  {q: "Would your team get an alert if AI spend suddenly jumped?",
+   gap: "No anomaly alerts, so a runaway job or retry loop can go unnoticed."},
+  {q: "Can you see your AI spend by team or feature?",
+   gap: "AI spend can't be traced to a team or feature, so nobody owns reducing it."},
+  {q: "Do jobs nobody waits on, such as reports, tagging or bulk summaries, run at AWS's half-price rate for work that can wait?",
+   gap: "Work that could wait may be running at full price; AWS charges half for work that doesn't need an instant answer.", link: "#guide-batch"},
+  {q: "When requests repeat the same long instructions or documents, is that text reused at the cheaper rate?",
+   gap: "Repeated text may be billed in full every time; reused text can cost about 90% less.", link: "#guide-caching"},
+  {q: "Have you tested a cheaper model on your simplest AI tasks?",
+   gap: "Simple tasks may be running on premium models; a quality test shows whether a cheaper one will do."},
+  {q: "If you pay for reserved AI capacity, is it busy most of the day?", na: "We don't use it",
+   gap: "Reserved capacity bills every hour; below roughly 60 to 70% steady use, paying per request is usually cheaper.", link: "#guide-pt"},
+  {q: "Do your data scientists' notebooks shut down automatically when nobody is using them?", na: "We don't use them",
+   gap: "Notebooks left running bill around the clock."},
+  {q: "Has anyone checked for unused AI servers and GPUs in the last month?", na: "We don't use them",
+   gap: "Unused AI servers and GPUs bill in full whether or not they're used.", link: "#guide-idle"}
+];
+var qWrap = document.getElementById("check-questions");
+QUESTIONS.forEach(function (item, i) {
+  var fs = document.createElement("fieldset");
+  fs.className = "check-q";
+  var lg = document.createElement("legend");
+  lg.textContent = (i + 1) + ". " + item.q;
+  fs.appendChild(lg);
+  var opts = document.createElement("div");
+  opts.className = "opts";
+  var choices = [["yes", "Yes"], ["no", "No"], ["unsure", "Not sure"]];
+  if (item.na) choices.push(["na", item.na]);
+  choices.forEach(function (c) {
+    var lab = document.createElement("label");
+    var inp = document.createElement("input");
+    inp.type = "radio"; inp.name = "q" + i; inp.value = c[0];
+    lab.appendChild(inp);
+    lab.appendChild(document.createTextNode(c[1]));
+    opts.appendChild(lab);
+  });
+  fs.appendChild(opts);
+  qWrap.appendChild(fs);
+});
+document.getElementById("check-submit").addEventListener("click", function () {
+  var status = document.getElementById("check-status");
+  var out = document.getElementById("check-result");
+  var answers = QUESTIONS.map(function (_, i) {
+    var sel = document.querySelector('input[name="q' + i + '"]:checked');
+    return sel ? sel.value : null;
+  });
+  var missing = answers.filter(function (a) { return a === null; }).length;
+  if (missing) {
+    status.textContent = "Answer the remaining " + missing + " question" + (missing === 1 ? "" : "s") + " to see your results.";
+    out.innerHTML = "";
+    return;
+  }
+  status.textContent = "";
+  var gaps = [], ok = 0;
+  answers.forEach(function (a, i) {
+    if (a === "yes" || a === "na") ok++; else gaps.push(QUESTIONS[i]);
+  });
+  var verdict = ok >= 8 ? "You're in good shape. A free scan would confirm nothing is slipping."
+    : ok >= 5 ? "You likely have some savings to capture. A free scan would put numbers on them."
+    : "You likely have significant savings to capture. A free scan would show where and how much.";
+  var html = '<div class="result"><div class="score">' + ok + " of " + QUESTIONS.length + ' in place</div><p>' + verdict + "</p>";
+  if (gaps.length) {
+    html += "<h3>Where money may be leaking</h3><ul>";
+    gaps.forEach(function (g) {
+      html += "<li>" + g.gap.replace(/&/g, "&amp;").replace(/</g, "&lt;") +
+        (g.link ? ' <a href="' + g.link + '">Read the guide</a>' : "") + "</li>";
+    });
+    html += "</ul>";
+  }
+  html += '<div class="actions"><a class="btn primary" id="check-book" href="#pricing">Book a free scan</a></div>' +
+    '<p class="fine">This check shows likely gaps, not dollar amounts. The free scan measures them in your account.</p>';
+  if (CONFIG.resultsFormUrl) {
+    html += '<form id="results-form" class="results-form" novalidate>' +
+      '<h3>Email me my results</h3>' +
+      '<p class="muted">Optional. We\'ll send your gaps and the matching guides, and may follow up once.</p>' +
+      '<label for="results-email">Work email</label>' +
+      '<input id="results-email" type="email" autocomplete="email" required>' +
+      '<label class="consent"><input id="results-consent" type="checkbox" required> ' +
+      'You can contact me about my results. <a href="#privacy">Privacy</a></label>' +
+      '<button class="btn" type="submit">Email my results</button>' +
+      '<p class="status" id="results-status" aria-live="polite"></p></form>';
+  }
+  html += '</div>';
+  out.innerHTML = html;
+  /* Keep an anonymous copy of every completed check (no name or email). */
+  if (CONFIG.resultsFormUrl) {
+    fetch(CONFIG.resultsFormUrl, {
+      method: "POST", headers: {"Content-Type": "application/json", "Accept": "application/json"},
+      body: JSON.stringify({
+        _subject: "Anonymous cost check (" + ok + " of " + QUESTIONS.length + ")",
+        type: "anonymous", score: ok + " of " + QUESTIONS.length,
+        gaps: gaps.map(function (g) { return g.gap; }).join("\n"),
+        answers: QUESTIONS.map(function (q, i) { return (i + 1) + ". " + q.q + " " + answers[i]; }).join("\n")
+      })
+    }).catch(function () {});
+  }
+  var rf = document.getElementById("results-form");
+  if (rf) rf.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var st = document.getElementById("results-status");
+    var email = document.getElementById("results-email").value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { st.textContent = "Enter a valid email address."; return; }
+    if (!document.getElementById("results-consent").checked) { st.textContent = "Tick the box so we can email you."; return; }
+    st.textContent = "Sending...";
+    fetch(CONFIG.resultsFormUrl, {
+      method: "POST", headers: {"Content-Type": "application/json", "Accept": "application/json"},
+      body: JSON.stringify({
+        email: email, _subject: "AI cost check results (" + ok + " of " + QUESTIONS.length + ")",
+        score: ok + " of " + QUESTIONS.length,
+        gaps: gaps.map(function (g) { return g.gap; }).join("\n"),
+        answers: QUESTIONS.map(function (q, i) { return (i + 1) + ". " + q.q + " " + answers[i]; }).join("\n")
+      })
+    }).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      rf.innerHTML = '<p><strong>Thanks.</strong> We\'ll email your results to ' +
+        email.replace(/&/g, "&amp;").replace(/</g, "&lt;") + ' shortly.</p>';
+    }).catch(function () {
+      st.textContent = "That didn't send. Please try again, or email us directly.";
+    });
+  });
+  if (bookUrl) {
+    var b = document.getElementById("check-book");
+    b.href = bookUrl;
+    if (/^https?:/.test(bookUrl)) { b.target = "_blank"; b.rel = "noopener"; }
+  }
+  out.scrollIntoView({behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start"});
+});
+
+var cf = document.getElementById("contact-form");
+cf.addEventListener("submit", function (e) {
+  e.preventDefault();
+  var st = document.getElementById("cf-status");
+  var v = function (id) { return document.getElementById(id).value.trim(); };
+  if (!v("cf-name")) { st.textContent = "Enter your name."; return; }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v("cf-email"))) { st.textContent = "Enter a valid email address."; return; }
+  if (!CONFIG.contactFormUrl) { st.textContent = "Please email us instead."; return; }
+  st.textContent = "Sending...";
+  fetch(CONFIG.contactFormUrl, {
+    method: "POST", headers: {"Content-Type": "application/json", "Accept": "application/json"},
+    body: JSON.stringify({topic: v("cf-topic"), name: v("cf-name"), email: v("cf-email"), company: v("cf-company"),
+      monthly_ai_spend: v("cf-spend"), message: v("cf-message"), _subject: "Website: " + v("cf-topic") + " - " + (v("cf-company") || v("cf-name"))})
+  }).then(function (r) {
+    if (!r.ok) throw new Error(r.status);
+    cf.innerHTML = "<p><strong>Thanks.</strong> We'll reply within two business days.</p>";
+  }).catch(function () {
+    st.textContent = "That didn't send. Please try again, or email info@comptimize.com.";
+  });
+});
+
+if (CONFIG.contactEmail) {
+  var cl = document.getElementById("contact-link");
+  cl.href = "mailto:" + CONFIG.contactEmail;
+  cl.textContent = CONFIG.contactEmail;
+  document.getElementById("contact-line").hidden = false;
+}
+/* Until payment links exist, these buttons lead to the free scan request (form, booking page or email). */
+if (CONFIG.auditPaymentLink) document.getElementById("audit-link").textContent = "Buy the audit";
+if (CONFIG.monthlyPaymentLink) document.getElementById("monthly-link").textContent = "Start monthly check-ins";
+wire("audit-link", CONFIG.auditPaymentLink || bookUrl);
+wire("monthly-link", CONFIG.monthlyPaymentLink || bookUrl);
+</script>
+</body>
+</html>
