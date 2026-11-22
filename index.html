@@ -223,11 +223,12 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
             <tr><th scope="row">Paying twice for the same text</th><td>Requests that resend the same long instructions or documents every time, which AWS can reuse for much less</td></tr>
             <tr><th scope="row">Capacity nobody uses</th><td>Reserved AI capacity, servers and GPUs that bill every hour but get little or no use</td></tr>
             <tr><th scope="row">GPUs doing a fraction of the work</th><td>Get more from the GPUs you already pay for: we show which ones are busy but mostly empty, and could share work or be swapped for a smaller size</td></tr>
+            <tr><th scope="row">Search databases that bill around the clock</th><td>The database your AI looks things up in, such as a vector store, charging every hour whether or not anyone searches it, and documents re-processed when nothing has changed</td></tr>
             <tr><th scope="row">Not knowing what drives the bill</th><td>Which product, feature or team your AI spend comes from, and whether budgets and alerts would catch a spike</td></tr>
           </tbody>
         </table>
       </div>
-      <details class="more"><summary>See all 18 checks in technical detail</summary>
+      <details class="more"><summary>See all 19 checks in technical detail</summary>
       <div class="table-scroll">
         <table class="checks">
           <thead><tr><th scope="col">Area</th><th scope="col">What we look for</th><th scope="col">How it's found</th></tr></thead>
@@ -249,6 +250,7 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
             <tr><th scope="row">AWS AI chip candidates and HyperPod</th><td>Steady GPU workloads that may cost less on AWS Inferentia or Trainium chips, and the nodes each HyperPod cluster keeps running, listed for review</td><td class="how">Automated scan</td></tr>
             <tr><th scope="row">Model Monitor schedules</th><td>Monitoring jobs still running for endpoints that are gone or idle, and hourly schedules on low-traffic endpoints where a daily run would do</td><td class="how">Automated scan</td></tr>
             <tr><th scope="row">Changes since your last scan</th><td>On repeat scans: new findings, findings that are gone, and the change in idle spend</td><td class="how">Automated scan</td></tr>
+            <tr><th scope="row">Search and retrieval layer</th><td>Spend on vector stores and search services (OpenSearch, Kendra, Bedrock Knowledge Bases) against how often each is queried, unused collections and indexes, and documents re-embedded when they haven't changed</td><td class="how">Review with your team</td></tr>
             <tr><th scope="row">GPU inference and training</th><td>Whether the sharing, resizing and AWS chip candidates from the scan are worth acting on, Slurm clusters outside HyperPod, and leftover training data and model artifacts</td><td class="how">Review with your team</td></tr>
           </tbody>
         </table>
