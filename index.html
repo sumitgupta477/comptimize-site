@@ -223,15 +223,21 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
           <thead><tr><th scope="col">Where money leaks</th><th scope="col">What it means</th></tr></thead>
           <tbody>
             <tr><th scope="row">Expensive models doing simple jobs</th><td>Simple tasks running on your most expensive model when a cheaper one would do</td></tr>
-            <tr><th scope="row">Agents that cost more than they should</th><td>Agents that loop, retry or use your top model for every step</td></tr>
             <tr><th scope="row">Work that could run at half price</th><td>Jobs nobody waits on, which AWS will run later at half the price</td></tr>
             <tr><th scope="row">Paying twice for the same text</th><td>The same long instructions or documents resent with every request</td></tr>
             <tr><th scope="row">Capacity nobody uses</th><td>Reserved capacity, servers and GPUs that bill every hour with little or no use</td></tr>
-            <tr><th scope="row">GPUs doing a fraction of the work</th><td>GPUs that are busy but mostly empty, and could share work or be downsized</td></tr>
-            <tr><th scope="row">Search databases that bill around the clock</th><td>A vector store or search service that charges every hour, whether or not anyone searches it</td></tr>
             <tr><th scope="row">Not knowing what drives the bill</th><td>Which product, feature or team your spend comes from, and whether an alert would catch a spike</td></tr>
           </tbody>
         </table>
+        <details class="more"><summary>Three more: AI agents, GPUs and search databases</summary>
+        <table class="checks">
+          <tbody>
+            <tr><th scope="row">Agents that cost more than they should</th><td>Agents that loop, retry or use your top model for every step</td></tr>
+            <tr><th scope="row">GPUs doing a fraction of the work</th><td>GPUs that are busy but mostly empty, and could share work or be downsized</td></tr>
+            <tr><th scope="row">Search databases that bill around the clock</th><td>A vector store or search service that charges every hour, whether or not anyone searches it</td></tr>
+          </tbody>
+        </table>
+        </details>
       </div>
       <details class="more"><summary>See all 19 checks in technical detail</summary>
       <div class="table-scroll">
@@ -274,10 +280,13 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
     <section id="check">
       <h2>Take the 2-minute AI cost check</h2>
       <p class="muted">Answer nine quick yes-or-no questions and see where your AI bill may be leaking. We keep your answers anonymously to improve the check; your name and email are only sent if you ask us to email you the results.</p>
+      <div class="actions" id="check-start-wrap"><button class="btn primary" id="check-start" type="button">Start the check</button></div>
+      <div id="check-body" hidden>
       <div id="check-questions"></div>
       <div class="actions"><button class="btn primary" id="check-submit" type="button">See my results</button></div>
       <p class="status" id="check-status" aria-live="polite"></p>
       <div id="check-result" aria-live="polite"></div>
+      </div>
     </section>
 
     <section id="after">
@@ -560,6 +569,12 @@ sustainability:GetEstimatedWaterAllocationDimensionValues</pre>
         </article>
       </div>
     </section>
+    <section id="start">
+      <h2>See where your AI money goes</h2>
+      <p class="muted">The free scan takes about 10 minutes to set up and changes nothing in your account. You keep the findings either way.</p>
+      <div class="actions"><a class="btn primary" id="book-link-5" href="#pricing">Book a free scan</a></div>
+    </section>
+
     <section id="privacy">
       <h2>Privacy</h2>
       <p class="muted">We only use your details to do the work you ask for. We never sell them. Last updated October 2026.</p>
@@ -628,6 +643,7 @@ var bookUrl = CONFIG.bookingUrl || (CONFIG.contactFormUrl ? "#contact" : "") ||
   (CONFIG.contactEmail ? "mailto:" + CONFIG.contactEmail + "?subject=" + encodeURIComponent("Free AI cost scan") : "");
 wire("book-link", bookUrl, "book-status", "Bookings open soon.");
 wire("book-link-2", bookUrl);
+wire("book-link-5", bookUrl);
 /* Questions about fixes and other projects go to the contact form, with the topic preselected. */
 var askUrl = CONFIG.contactFormUrl ? "#contact" : bookUrl;
 wire("book-link-3", askUrl);
@@ -644,6 +660,17 @@ document.addEventListener("click", function (e) {
   var d = document.querySelector(a.getAttribute("href") + " details");
   if (d) d.open = true;
 });
+/* The cost check opens from its Start button, or from any link to it. */
+function openCheck() {
+  document.getElementById("check-body").hidden = false;
+  document.getElementById("check-start-wrap").hidden = true;
+}
+document.getElementById("check-start").addEventListener("click", openCheck);
+document.addEventListener("click", function (e) {
+  var a = e.target.closest && e.target.closest('a[href="#check"]');
+  if (a) openCheck();
+});
+if (location.hash === "#check") openCheck();
 /* Links to the privacy notice open it. */
 function openPrivacy() { var d = document.getElementById("privacy-d"); if (d) d.open = true; }
 document.addEventListener("click", function (e) {
@@ -652,7 +679,7 @@ document.addEventListener("click", function (e) {
 });
 if (location.hash === "#privacy") openPrivacy();
 /* Buttons that open the contact form preselect the matching topic. */
-var TOPICS = {"book-link": "Free scan", "book-link-2": "Free scan", "book-link-3": "Implementation work",
+var TOPICS = {"book-link": "Free scan", "book-link-2": "Free scan", "book-link-5": "Free scan", "book-link-3": "Implementation work",
   "book-link-4": "Other services", "fix-link": "Implementation work", "audit-link": "Full audit", "monthly-link": "Monthly check-ins", "refer-link": "Introduction"};
 document.addEventListener("click", function (e) {
   var a = e.target.closest && e.target.closest("a");
