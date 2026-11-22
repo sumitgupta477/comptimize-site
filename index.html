@@ -172,7 +172,7 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
     <div class="hero">
       <div>
         <h1>Is AI eating into your margins?</h1>
-        <p class="lead">If your product runs on AI, every customer request costs you money, and the bill grows as you grow. Most teams pay more than they need to: expensive models doing simple jobs, capacity nobody uses, and discounts nobody switched on. Comptimize finds that money on AWS and shows you what each fix saves.</p>
+        <p class="lead">If your product runs on AI, every customer request costs you money, and the bill grows as you grow. Most teams pay more than they need to: expensive models doing simple jobs, agents that take more steps than the task needs, capacity nobody uses, and discounts nobody switched on. Comptimize finds that money on AWS and shows you what each fix saves.</p>
         <div class="actions">
           <a class="btn primary" id="book-link" href="#pricing">Book a free scan</a>
         </div>
@@ -218,6 +218,7 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
           <thead><tr><th scope="col">Where money leaks</th><th scope="col">What it means</th></tr></thead>
           <tbody>
             <tr><th scope="row">Expensive models doing simple jobs</th><td>Simple tasks, like sorting or tagging, running on your most expensive AI model when a cheaper one would do</td></tr>
+            <tr><th scope="row">Agents that cost more than they should</th><td>AI agents that loop, retry or use your most expensive model for every step, so one task costs far more than it needs to</td></tr>
             <tr><th scope="row">Work that could run at half price</th><td>Jobs nobody waits on, like nightly reports, that AWS would run later at half the price</td></tr>
             <tr><th scope="row">Paying twice for the same text</th><td>Requests that resend the same long instructions or documents every time, which AWS can reuse for much less</td></tr>
             <tr><th scope="row">Capacity nobody uses</th><td>Reserved AI capacity, servers and GPUs that bill every hour but get little or no use</td></tr>
@@ -225,7 +226,7 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
           </tbody>
         </table>
       </div>
-      <details class="more"><summary>See all 17 checks in technical detail</summary>
+      <details class="more"><summary>See all 18 checks in technical detail</summary>
       <div class="table-scroll">
         <table class="checks">
           <thead><tr><th scope="col">Area</th><th scope="col">What we look for</th><th scope="col">How it's found</th></tr></thead>
@@ -234,6 +235,7 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
             <tr><th scope="row">Batch inference</th><td>Workloads nobody waits on that could run at half the price</td><td class="how">Review with your team</td></tr>
             <tr><th scope="row">Prompt caching</th><td>Requests that resend the same long instructions or documents</td><td class="how">Review with your team</td></tr>
             <tr><th scope="row">Model choice and routing</th><td>Simple tasks running on your most expensive model</td><td class="how">Review with your team</td></tr>
+            <tr><th scope="row">Agent workloads</th><td>What one agent task costs across all of its model calls, loops and retries that multiply those calls, and agents with no spend limit or step cap</td><td class="how">Review with your team</td></tr>
             <tr><th scope="row">SageMaker endpoints and notebooks</th><td>Endpoints with no traffic and notebooks left running</td><td class="how">Automated scan</td></tr>
             <tr><th scope="row">Cost controls</th><td>Missing budget alerts, anomaly alerts, notebook auto-stop and Bedrock spend tracking</td><td class="how">Automated scan</td></tr>
             <tr><th scope="row">Savings Plans</th><td>AWS's own commitment recommendations for steady SageMaker and compute usage, with the estimated saving</td><td class="how">Automated scan</td></tr>
@@ -318,7 +320,7 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
       <h2>Who does the work</h2>
       <div class="two">
         <div>
-          <p>Comptimize is run by Sumit and Renu.</p>
+          <p>Comptimize is run by Sumit and Renu. Our first-year goal: find $1 million in AI savings for our clients.</p>
           <p class="person"><b>Sumit</b>, Cloud and FinOps</p>
           <p>Sumit is a cloud architect and cloud cost specialist with over 10 years of experience, who has cut cloud bills for Fortune 500 companies and built AI systems on AWS.</p>
           <ul class="not-yet" style="color:var(--fg)">
