@@ -306,7 +306,7 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
             <tr><th scope="row">Azure and Google Cloud audits</th><td>The same AI cost review for Azure OpenAI, Azure Machine Learning, Vertex AI and GPU instances, done by hand from your cost exports. On request</td></tr>
             <tr><th scope="row">AI governance on AWS</th><td>Set up the technical controls for how your teams use AI: approved models, Bedrock guardrails, invocation logging, access rules and cost ownership. We build the controls; your legal and compliance teams set the policy. Azure and Google Cloud on request</td></tr>
             <tr><th scope="row">Reliability and security review</th><td>A hands-on review of your AI workloads: the four golden signals (latency, traffic, errors, saturation), endpoint scaling and failover, notebook and endpoint access, encryption and network exposure, with a prioritized fix list. Recommendations, not a compliance audit. On request</td></tr>
-            <tr><th scope="row">Engineering help</th><td>Hands-on help beyond AI costs: Kubernetes cost reviews (right-sizing what each app reserves, autoscaling, cheaper servers), deployment pipelines, security, running AI models in production, cloud cleanup and architecture reviews, and general cloud and software work</td></tr>
+            <tr><th scope="row">Engineering help</th><td>Hands-on help beyond AI costs: Kubernetes cost reviews (right-sizing what each app reserves, autoscaling, cheaper servers), deployment pipelines, security, running AI models in production, and cloud cleanup and architecture reviews</td></tr>
           </tbody>
         </table>
       </div>
@@ -413,7 +413,7 @@ sustainability:GetEstimatedWaterAllocationDimensionValues</pre>
 
     <section id="pricing">
       <h2>Pricing</h2>
-      <p class="muted">Start with the free scan. It tells you whether a full audit is worth it. The full audit is for teams spending about $5,000 a month or more on AI in AWS. Implementation work is quoted separately for each project.</p>
+      <p class="muted">Start with the free scan. It tells you whether a full audit is worth it. The full audit is for teams spending about $5,000 a month or more on AI in AWS. Fix packages start at $750 and are quoted per project before any work starts.</p>
       <div class="plans">
         <div class="plan">
           <h3>Free scan</h3>
@@ -612,8 +612,10 @@ var bookUrl = CONFIG.bookingUrl || (CONFIG.contactFormUrl ? "#contact" : "") ||
   (CONFIG.contactEmail ? "mailto:" + CONFIG.contactEmail + "?subject=" + encodeURIComponent("Free AI cost scan") : "");
 wire("book-link", bookUrl, "book-status", "Bookings open soon.");
 wire("book-link-2", bookUrl);
-wire("book-link-3", bookUrl);
-wire("book-link-4", bookUrl);
+/* Questions about fixes and other projects go to the contact form, with the topic preselected. */
+var askUrl = CONFIG.contactFormUrl ? "#contact" : bookUrl;
+wire("book-link-3", askUrl);
+wire("book-link-4", askUrl);
 var referUrl = CONFIG.contactFormUrl ? "#contact" : CONFIG.contactEmail
   ? "mailto:" + CONFIG.contactEmail + "?subject=" + encodeURIComponent("Introduction: a team that could use a free AI cost scan")
   : bookUrl;
