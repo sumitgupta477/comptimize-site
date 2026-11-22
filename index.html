@@ -133,8 +133,12 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 .field input[type=range]{width:9rem;padding:0;background:transparent;border:0;accent-color:var(--accent)}
 .how{font-size:.9rem;color:var(--muted);white-space:nowrap}
-.plans{grid-template-columns:repeat(3,1fr)}
+.plans{grid-template-columns:repeat(2,1fr)}
 @media (max-width:52rem){.plans{grid-template-columns:1fr}}
+.steps{grid-template-columns:repeat(4,1fr);gap:1.5rem}
+.steps .cost{color:var(--fg);font-weight:700;margin:.2rem 0 0}
+@media (max-width:64rem){.steps{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:52rem){.steps{grid-template-columns:1fr}}
 .check-q{border:0;border-top:1px solid var(--line);margin:0;padding:1rem 0}
 .check-q legend{font-weight:600;padding:0;margin-bottom:.6rem;max-width:62ch}
 .opts{display:flex;flex-wrap:wrap;gap:.5rem}
@@ -172,7 +176,7 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
     <div class="hero">
       <div>
         <h1>Is AI eating into your margins?</h1>
-        <p class="lead">If your product runs on AI, every customer request costs you money, and the bill grows as you grow. Most teams pay more than they need to: expensive models doing simple jobs, agents that take more steps than the task needs, capacity nobody uses, and discounts nobody switched on. Comptimize finds that money on AWS and shows you what each fix saves.</p>
+        <p class="lead">If your product runs on AI, every customer request costs you money, and the bill grows as you grow. Comptimize finds what you're overpaying for on AWS and shows what each fix saves.</p>
         <div class="actions">
           <a class="btn primary" id="book-link" href="#pricing">Book a free scan</a>
         </div>
@@ -204,9 +208,10 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
       <h2>How it works</h2>
       <p class="muted">You find out what's worth fixing before you pay anything.</p>
       <ol class="steps">
-        <li><h3>Free scan</h3><p>You give us read-only access to your AWS account in a few clicks. We can't change anything. We scan it and walk you through the biggest findings on a 30-minute call.</p></li>
-        <li><h3>Full audit</h3><p>We go through how your product uses AI with your team, then deliver a written report ranking every fix by how much it saves and how hard it is.</p></li>
-        <li><h3>Fix</h3><p>Your team makes the changes, or we do them for you, quoted per project. <a href="#after">See what we can implement</a>.</p></li>
+        <li><h3>Free scan</h3><p class="cost">$0</p><p>You give us read-only access to your AWS account in a few clicks. We scan it and walk you through the biggest findings on a 30-minute call.</p></li>
+        <li><h3>Full audit</h3><p class="cost">From $1,500</p><p>We review how your product uses AI with your team, then send a written report ranking every fix by saving and effort.</p></li>
+        <li><h3>Fix</h3><p class="cost">$750 to $5,000 per package</p><p>Your team makes the changes, or we do. <a href="#after">See what we can fix</a>.</p></li>
+        <li><h3>Keep it that way</h3><p class="cost">$500 a month</p><p>A monthly re-scan catches new waste. Larger projects are quoted separately.</p></li>
       </ol>
     </section>
 
@@ -217,14 +222,14 @@ footer{border-top:1px solid var(--line);padding:2rem 0 2.5rem;color:var(--muted)
         <table class="checks">
           <thead><tr><th scope="col">Where money leaks</th><th scope="col">What it means</th></tr></thead>
           <tbody>
-            <tr><th scope="row">Expensive models doing simple jobs</th><td>Simple tasks, like sorting or tagging, running on your most expensive AI model when a cheaper one would do</td></tr>
-            <tr><th scope="row">Agents that cost more than they should</th><td>AI agents that loop, retry or use your most expensive model for every step, so one task costs far more than it needs to</td></tr>
-            <tr><th scope="row">Work that could run at half price</th><td>Jobs nobody waits on, like nightly reports, that AWS would run later at half the price</td></tr>
-            <tr><th scope="row">Paying twice for the same text</th><td>Requests that resend the same long instructions or documents every time, which AWS can reuse for much less</td></tr>
-            <tr><th scope="row">Capacity nobody uses</th><td>Reserved AI capacity, servers and GPUs that bill every hour but get little or no use</td></tr>
-            <tr><th scope="row">GPUs doing a fraction of the work</th><td>Get more from the GPUs you already pay for: we show which ones are busy but mostly empty, and could share work or be swapped for a smaller size</td></tr>
-            <tr><th scope="row">Search databases that bill around the clock</th><td>The database your AI looks things up in, such as a vector store, charging every hour whether or not anyone searches it, and documents re-processed when nothing has changed</td></tr>
-            <tr><th scope="row">Not knowing what drives the bill</th><td>Which product, feature or team your AI spend comes from, and whether budgets and alerts would catch a spike</td></tr>
+            <tr><th scope="row">Expensive models doing simple jobs</th><td>Simple tasks running on your most expensive model when a cheaper one would do</td></tr>
+            <tr><th scope="row">Agents that cost more than they should</th><td>Agents that loop, retry or use your top model for every step</td></tr>
+            <tr><th scope="row">Work that could run at half price</th><td>Jobs nobody waits on, which AWS will run later at half the price</td></tr>
+            <tr><th scope="row">Paying twice for the same text</th><td>The same long instructions or documents resent with every request</td></tr>
+            <tr><th scope="row">Capacity nobody uses</th><td>Reserved capacity, servers and GPUs that bill every hour with little or no use</td></tr>
+            <tr><th scope="row">GPUs doing a fraction of the work</th><td>GPUs that are busy but mostly empty, and could share work or be downsized</td></tr>
+            <tr><th scope="row">Search databases that bill around the clock</th><td>A vector store or search service that charges every hour, whether or not anyone searches it</td></tr>
+            <tr><th scope="row">Not knowing what drives the bill</th><td>Which product, feature or team your spend comes from, and whether an alert would catch a spike</td></tr>
           </tbody>
         </table>
       </div>
@@ -413,7 +418,7 @@ sustainability:GetEstimatedWaterAllocationDimensionValues</pre>
 
     <section id="pricing">
       <h2>Pricing</h2>
-      <p class="muted">Start with the free scan. It tells you whether a full audit is worth it. The full audit is for teams spending about $5,000 a month or more on AI in AWS. Fix packages run from $750 to $5,000 and are quoted per project before any work starts. Larger projects, such as cloud migrations and AI agent builds, are scoped and quoted separately.</p>
+      <p class="muted">Start with the free scan. It tells you whether a full audit is worth it.</p>
       <div class="plans">
         <div class="plan">
           <h3>Free scan</h3>
@@ -430,15 +435,24 @@ sustainability:GetEstimatedWaterAllocationDimensionValues</pre>
           <div class="price">From $1,500<span> one time</span></div>
           <p class="muted" style="margin:.25rem 0 .5rem">Best for teams spending $5,000+ a month on AI in AWS</p>
           <ul>
-            <li>Full scan of your AI services on AWS</li>
-            <li>Review of how your product uses AI: cheaper models, work that can wait, repeated text</li>
-            <li>Plus general AWS waste found along the way</li>
+            <li>Full scan of your AI services, plus general AWS waste</li>
+            <li>Review of how your product uses AI</li>
             <li>Written report ranked by saving and effort (<a href="sample-audit-report.pdf" target="_blank" rel="noopener">see a sample</a>)</li>
             <li>60-minute review call with your team</li>
-            <li>A project quote for any fixes you want us to make</li>
+            <li>A quote for any fixes you want us to make</li>
           </ul>
           <a class="btn primary" id="audit-link" href="#pricing">Request an audit</a>
           <p class="status" id="audit-status"></p>
+        </div>
+        <div class="plan">
+          <h3>Fixes</h3>
+          <div class="price">$750–$5,000<span> per package</span></div>
+          <ul>
+            <li>We make the changes your audit recommends</li>
+            <li>Quoted and agreed before any work starts</li>
+            <li>Larger projects, such as cloud migrations and AI agent builds, are quoted separately</li>
+          </ul>
+          <a class="btn" id="fix-link" href="#after">Ask about a fix</a>
         </div>
         <div class="plan">
           <h3>Monthly check-in</h3>
@@ -548,7 +562,8 @@ sustainability:GetEstimatedWaterAllocationDimensionValues</pre>
     </section>
     <section id="privacy">
       <h2>Privacy</h2>
-      <p class="muted">Last updated October 2026.</p>
+      <p class="muted">We only use your details to do the work you ask for. We never sell them. Last updated October 2026.</p>
+      <details class="more" id="privacy-d"><summary>Read the full privacy notice</summary>
       <div class="two">
         <div>
           <h3>What we collect</h3>
@@ -563,6 +578,7 @@ sustainability:GetEstimatedWaterAllocationDimensionValues</pre>
           <p class="muted">We keep reports and scan results for 12 months after an engagement ends, and cost check results for 12 months after you send them, or delete them sooner on request. You can remove our access at any time in your AWS account. To ask about or delete your information, email <a href="mailto:info@comptimize.com">info@comptimize.com</a>.</p>
         </div>
       </div>
+      </details>
     </section>
   </main>
 
@@ -616,6 +632,7 @@ wire("book-link-2", bookUrl);
 var askUrl = CONFIG.contactFormUrl ? "#contact" : bookUrl;
 wire("book-link-3", askUrl);
 wire("book-link-4", askUrl);
+wire("fix-link", askUrl);
 var referUrl = CONFIG.contactFormUrl ? "#contact" : CONFIG.contactEmail
   ? "mailto:" + CONFIG.contactEmail + "?subject=" + encodeURIComponent("Introduction: a team that could use a free AI cost scan")
   : bookUrl;
@@ -627,9 +644,16 @@ document.addEventListener("click", function (e) {
   var d = document.querySelector(a.getAttribute("href") + " details");
   if (d) d.open = true;
 });
+/* Links to the privacy notice open it. */
+function openPrivacy() { var d = document.getElementById("privacy-d"); if (d) d.open = true; }
+document.addEventListener("click", function (e) {
+  var a = e.target.closest && e.target.closest('a[href="#privacy"]');
+  if (a) openPrivacy();
+});
+if (location.hash === "#privacy") openPrivacy();
 /* Buttons that open the contact form preselect the matching topic. */
 var TOPICS = {"book-link": "Free scan", "book-link-2": "Free scan", "book-link-3": "Implementation work",
-  "book-link-4": "Other services", "audit-link": "Full audit", "monthly-link": "Monthly check-ins", "refer-link": "Introduction"};
+  "book-link-4": "Other services", "fix-link": "Implementation work", "audit-link": "Full audit", "monthly-link": "Monthly check-ins", "refer-link": "Introduction"};
 document.addEventListener("click", function (e) {
   var a = e.target.closest && e.target.closest("a");
   if (!a || a.getAttribute("href") !== "#contact") return;
